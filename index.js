@@ -91,18 +91,18 @@ app.post('/api/books', (request, response) => {
 })
 
 app.get('/api/books/:id', (request, response) => {
-  // const id = Number(request.params.id)
-  // const book = books.find(book => book.id === id)
-  // if (book) {
-  //   response.json(book)
-  // } else {
-  //   console.log('x')
-  //   response.status(404).end()
-  // }
-
   Book.findById(request.params.id).then(b => {
-    response.json(b)
+    if (b) {
+      response.json(b)
+    } else {
+      console.log('ERROR: 404 Not Found')
+      response.status(404).end()
+    }
   })
+    .catch(error => {
+      console.log('ERROR:', error)
+      response.status(400).send({ error: 'Malformed ID' })
+    })
 })
 
 app.delete('/api/books/:id', (request, response) => {
