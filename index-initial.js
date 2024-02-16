@@ -1,8 +1,6 @@
-require('dotenv').config()
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const Book = require('./models/book')
 
 
 let books = [
@@ -55,10 +53,7 @@ app.get('/', (request, response) => {
 })
 
 app.get('/api/books', (request, response) => {
-  Book.find({}).then(b => {
-    response.json(b)
-  })
-  // response.json(books)
+  response.json(books)
 })
 
 const generateId = () => {
@@ -77,32 +72,27 @@ app.post('/api/books', (request, response) => {
     })
   }
 
-  const book = new Book({
+  const book = {
+    id: generateId(),
     key: body.key,
     title: body.title,
     author_name: [body.author_name]
-  })
+  }
 
-  // books = books.concat(book)
+  books = books.concat(book)
 
-  book.save().then(savedBook => {
-    response.json(savedBook)
-  })
+  response.json(book)
 })
 
 app.get('/api/books/:id', (request, response) => {
-  // const id = Number(request.params.id)
-  // const book = books.find(book => book.id === id)
-  // if (book) {
-  //   response.json(book)
-  // } else {
-  //   console.log('x')
-  //   response.status(404).end()
-  // }
-
-  Book.findById(request.params.id).then(b => {
-    response.json(b)
-  })
+  const id = Number(request.params.id)
+  const book = books.find(book => book.id === id)
+  if (book) {
+    response.json(book)
+  } else {
+    console.log('x')
+    response.status(404).end()
+  }
 })
 
 app.delete('/api/books/:id', (request, response) => {
@@ -114,7 +104,7 @@ app.delete('/api/books/:id', (request, response) => {
 
 app.use(unknownEndpoint)
 
-const PORT = process.env.PORT
+const PORT = 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
