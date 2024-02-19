@@ -1,23 +1,20 @@
 const mongoose = require('mongoose')
 
-mongoose.set('strictQuery', false)
-
-const url = process.env.MONGODB_URI
-
-console.log('connecting to', url)
-
-mongoose.connect(url)
-  .then(result => {
-    console.log('connected to MongoDB')
-  })
-  .catch(error => {
-    console.log('error connecting to MongoDB:', error.message)
-  })
-
 const bookSchema = new mongoose.Schema({
   key: String,
-  title: String,
-  author_name: [],
+  title: {
+    type: String,
+    minLength: 1,
+    required: true,
+    cast: false
+  },
+  author_name: {
+    type: [String],
+    required: true,
+    cast: false,
+    default: undefined, // Override: Arrays implicitly have a value of [] by default. 
+    // validate: arrayMin
+  },
 })
 
 bookSchema.set('toJSON', {
