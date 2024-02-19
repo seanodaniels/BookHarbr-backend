@@ -24,6 +24,24 @@ const Book = require('../models/book')
 //   ],
 // },
 
+booksRouter.get('/', (request, response) => {
+  Book.find({}).then(books => {
+    response.json(books)
+  })
+})
+
+booksRouter.get('/:id', (request, response, next) => {
+  Book.findById(request.params.id).then(book => {
+    if (book) {
+      response.json(book)
+    } else {
+      console.log('ERROR: 404 Not Found')
+      response.status(404).end()
+    }
+  })
+    .catch(error => next(error))
+})
+
 booksRouter.post('/', (request, response, next) => {
   const body = request.body
   const book = new Book({
@@ -34,25 +52,6 @@ booksRouter.post('/', (request, response, next) => {
 
   book.save().then(savedBook => {
     response.json(savedBook)
-  })
-    .catch(error => next(error))
-})
-
-booksRouter.get('/', (request, response) => {
-  Book.find({}).then(books => {
-    response.json(books)
-  })
-})
-
-
-booksRouter.get('/:id', (request, response, next) => {
-  Book.findById(request.params.id).then(book => {
-    if (book) {
-      response.json(book)
-    } else {
-      console.log('ERROR: 404 Not Found')
-      response.status(404).end()
-    }
   })
     .catch(error => next(error))
 })
