@@ -3,36 +3,37 @@ const List = require('../models/List')
 
 const currentUserId = '65c88888888888888888887f' // dummy user. change this when authentication
 
-listsRouter.get('/', (request, response) => {
-  List.find({}).then(books => {
-    response.json(books)
-  })
+listsRouter.get('/', async (request, response) => {
+  const lists = await List.find({})
+  response.status(201).json(lists)
 })
 
-listsRouter.get('/:id', (request, response, next) => {
-  List.findById(request.params.id).then(list => {
-    if (list) {
-      response.json(book)
-    } else {
-      console.log('ERROR: 404 Not Found')
-      response.status(404).end()
-    }
-  })
-    .catch(error => next(error))
+listsRouter.get('/:id', async (request, response, next) => {
+  const list = await List.findById(request.params.id)
+  if (list) {
+    response.json(list)
+  } else {
+    response.status(404).end()
+  }
 })
 
-listsRouter.post('/', (request, response, next) => {
+listsRouter.delete('/:id', async (request, response) => {
+  await List.findByIdAndDelete(request.params.id)
+  response.status(204).end()
+})
+
+listsRouter.post('/', async (request, response, next) => {
   const body = request.body
+
   const list = new List({
     user: currentUserId,
     listName: body.listName,
     bookKeys: body.bookKeys
   })
 
-  list.save().then(savedList => {
-    response.json(savedList)
-  })
-    .catch(error => next(error))
+  const savedList = await list.save()
+  response.status(201).json(savedList)
+
 })
 
 listsRouter.put('/:id', (request, response, next) => {
@@ -51,13 +52,5 @@ listsRouter.put('/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-listsRouter.delete('/:id', (request, response, next) => {
-  List.findByIdAndDelete(request.params.id)
-    .then(result => {
-      console.log(`DELETED record id ${request.params.id}`)
-      response.status(204).end()
-    })
-    .catch(error => next(error))
-})
 
 module.exports = listsRouter
