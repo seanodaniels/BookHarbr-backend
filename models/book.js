@@ -11,7 +11,7 @@ const bookSchema = new mongoose.Schema({
   author_name: {
     type: [String],
     required: true,
-    cast: false,
+    cast: false, // Irrelevant setting, as empty arrays are cast as type Mixed anyway.
     default: undefined, // Override: Arrays implicitly have a value of [] by default. 
     // validate: arrayMin
   },

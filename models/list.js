@@ -2,9 +2,8 @@ const mongoose = require('mongoose')
 
 const listsSchema = new mongoose.Schema({
   user: {
-    type: String,
-    required: true,
-    cast: false
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   },
   listName: {
     type: String,
