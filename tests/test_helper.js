@@ -29,9 +29,9 @@ const nonExistingId = async () => {
     }
   )
   await list.save()
-  await note.deleteOne()
+  await list.deleteOne()
 
-  return note._id.toString()
+  return list._id.toString()
 }
 
 const listsInDb = async () => {
