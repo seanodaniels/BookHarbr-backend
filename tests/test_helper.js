@@ -1,4 +1,5 @@
-const List = require('../models/List')
+const List = require('../models/list')
+const User = require('../models/user')
 
 const initialLists = [
   {
@@ -18,7 +19,7 @@ const initialLists = [
   }
 ]
 
-const nonExistingId = async () => {
+const nonExistingListId = async () => {
   const list = new List(
     {
       listName: 'I only exist to provide a unique ID :(',
@@ -39,8 +40,14 @@ const listsInDb = async () => {
   return lists.map(l => l.toJSON())
 }
 
+const usersInDb = async () => {
+  const users = await User.find({})
+  return users.map(u => u.toJSON())
+}
+
 module.exports = {
   initialLists,
-  nonExistingId,
-  listsInDb
+  nonExistingListId,
+  listsInDb,
+  usersInDb,
 }

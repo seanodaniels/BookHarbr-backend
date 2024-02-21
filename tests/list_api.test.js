@@ -4,7 +4,7 @@ const app = require('../app')
 const helper = require('./test_helper')
 const api = supertest(app)
 
-const List = require('../models/List')
+const List = require('../models/list')
 
 beforeEach(async () => {
   await List.deleteMany({})
@@ -54,7 +54,7 @@ describe('\n=== GET specific list ===', () => {
   })
 
   test('GET specific list fails with 404 if the list id does not exist', async () => {
-    const nopeId = await helper.nonExistingId()
+    const nopeId = await helper.nonExistingListId()
     await api.get(`/api/lists/${nopeId}`).expect(404)
   })
 
