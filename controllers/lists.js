@@ -1,7 +1,17 @@
+const jwt = require('jsonwebtoken')
 const listsRouter = require('express').Router()
 const List = require('../models/List')
+const User = require('../models/user')
 
 const currentUserId = '65c88888888888888888887f' // dummy user. change this when authentication
+
+const getTokenFrom = request => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.startsWith('Bearer ')) {
+    return authorization.replace('Bearer ', '')
+  }
+  return null
+}
 
 listsRouter.get('/', async (request, response) => {
   const lists = await List.find({})
@@ -24,9 +34,15 @@ listsRouter.delete('/:id', async (request, response) => {
 
 listsRouter.post('/', async (request, response, next) => {
   const body = request.body
+  const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: 'Token invalid' })
+  }
+
+  const user = await User.findById(decodedToken.id)
 
   const list = new List({
-    user: currentUserId,
+    user: user.id,
     listName: body.listName,
     bookKeys: body.bookKeys
   })
