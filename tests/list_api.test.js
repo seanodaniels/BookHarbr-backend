@@ -161,8 +161,6 @@ describe('\n=== POST new list ===', () => {
   })
 })
 
-
-
 describe('\n=== DELETE a list ===', () => {
   test('DELETE specific list succeeds with a 204', async () => {
     const listsAtStart = await helper.listsInDb()
