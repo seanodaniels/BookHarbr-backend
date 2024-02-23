@@ -1,9 +1,7 @@
 const jwt = require('jsonwebtoken')
 const listsRouter = require('express').Router()
-const List = require('../models/List')
+const List = require('../models/list')
 const User = require('../models/user')
-
-const currentUserId = '65c88888888888888888887f' // dummy user. change this when authentication
 
 const getTokenFrom = request => {
   const authorization = request.get('authorization')

@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
@@ -5,12 +7,38 @@ const helper = require('./test_helper')
 const api = supertest(app)
 
 const List = require('../models/list')
+const User = require('../models/user')
+
+let testToken = null
 
 beforeEach(async () => {
   await List.deleteMany({})
   const listObjects = helper.initialLists.map(l => new List(l))
   const promiseArray = listObjects.map(l => l.save())
   await Promise.all(promiseArray)
+
+  // Create new user
+  await User.deleteMany({})
+
+  const passwordHash = await bcrypt.hash('secret', 10)
+  const user = {
+    username: 'testuser',
+    name: 'Testuser McTestface',
+    passwordHash: passwordHash
+  }
+  const newUser = new User(user)
+  await newUser.save()
+
+  // Login testuser
+  const username = 'testuser'
+  const password = 'secret'
+
+  const response = await api
+    .post('/api/login')
+    .send({ username, password })
+
+  testToken = response.body.token
+
 })
 
 describe('\n=== GET Tests with sample initial notes ===', () => {
@@ -76,6 +104,7 @@ describe('\n=== POST new list ===', () => {
     await api
       .post('/api/lists')
       .send(newList)
+      .set({ Authorization: `Bearer ${testToken}` })
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
@@ -86,22 +115,53 @@ describe('\n=== POST new list ===', () => {
 
   })
 
-  test('POST of invalid info fails with 400', async () => {
+  test('POST missing "listName" fails with 400', async () => {
     const newList = {
       bookKeys: [
         '/works/OL17877492W'
       ]
     }
-
     await api
       .post('/api/lists')
       .send(newList)
       .expect(400)
+    const response = await api.get('/api/lists')
+    expect(response.body).toHaveLength(helper.initialLists.length)
+  })
 
+  test('POST missing a valid token fails with 400', async () => {
+    const newList = {
+      listName: '[I exist only to succeed in the tests]',
+      bookKeys: [
+        '/works/OL17877492W'
+      ]
+    }
+    await api
+      .post('/api/lists')
+      .send(newList)
+      .expect(400)
+    const response = await api.get('/api/lists')
+    expect(response.body).toHaveLength(helper.initialLists.length)
+  })
+
+  test('POST containing an invalid token fails with 400', async () => {
+    const newList = {
+      listName: '[I exist only to succeed in the tests]',
+      bookKeys: [
+        '/works/OL17877492W'
+      ]
+    }
+    await api
+      .post('/api/lists')
+      .send(newList)
+      .set({ Authorization: `BEARER THIS_IS_A_BAD_TOKEN` })
+      .expect(400)
     const response = await api.get('/api/lists')
     expect(response.body).toHaveLength(helper.initialLists.length)
   })
 })
+
+
 
 describe('\n=== DELETE a list ===', () => {
   test('DELETE specific list succeeds with a 204', async () => {
