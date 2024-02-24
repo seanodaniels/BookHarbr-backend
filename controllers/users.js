@@ -36,8 +36,9 @@ usersRouter.get('/', async (request, response) => {
 })
 
 usersRouter.get('/lists', middleware.userExtractor, async (request, response) => {
+  const user = request.user
 
-  const lists = await List.find({})
+  const lists = await List.find({ user: user.id })
   response.status(201).json(lists)
 
 })
