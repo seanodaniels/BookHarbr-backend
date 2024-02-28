@@ -3,10 +3,10 @@ const User = require('../models/user')
 const logger = require('./logger')
 
 const requestLogger = (request, response, next) => {
-  // console.log('Method:', request.method)
-  // console.log('Path:  ', request.path)
-  // console.log('Body:  ', request.body)
-  // console.log('---')
+  console.log('Method:', request.method)
+  console.log('Path:  ', request.path)
+  console.log('Body:  ', request.body)
+  console.log('---')
   next()
 }
 
@@ -40,11 +40,19 @@ const tokenExtractor = (request, response, next) => {
 }
 
 const userExtractor = async (request, response, next) => {
-  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  console.log('====hit=====')
+  let decodedToken = null
+  try {
+    decodedToken = jwt.verify(request.token, process.env.SECRET)
+  } catch {
+    console.log('====hit2=====')
+    return response.status(401).json({ error: 'invalid token' })
+  }
 
   if (!decodedToken) {
     return response.status(401).json({ error: 'invalid token' })
   } else {
+    console.log('user set')
     request.user = await User.findById(decodedToken.id)
   }
   next()
