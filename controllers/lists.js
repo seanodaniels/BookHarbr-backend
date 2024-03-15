@@ -6,8 +6,12 @@ const User = require('../models/user')
 const getTokenFrom = request => {
   const authorization = request.get('authorization')
   if (authorization && authorization.startsWith('Bearer ')) {
+
     return authorization.replace('Bearer ', '')
+
+
   }
+  console.log('hit')
   return null
 }
 
@@ -33,6 +37,7 @@ listsRouter.delete('/:id', async (request, response) => {
 listsRouter.post('/', async (request, response, next) => {
   const body = request.body
   const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
+  console.log('user token:', decodedToken)
   if (!decodedToken.id) {
     return response.status(401).json({ error: 'Token invalid' })
   }
