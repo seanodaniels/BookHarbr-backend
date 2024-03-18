@@ -35,12 +35,10 @@ usersRouter.get('/', async (request, response) => {
   response.status(201).json(users)
 })
 
-usersRouter.get('/lists', middleware.userExtractor, async (request, response) => {
-  const user = request.user
-
-  const lists = await List.find({ user: user.id })
-  response.status(201).json(lists)
-
-})
+// usersRouter.get('/lists', middleware.userExtractor, async (request, response) => {
+//   const user = request.user
+//   const lists = await List.find({ user: user.id })
+//   response.status(201).json(lists)
+// })
 
 module.exports = usersRouter

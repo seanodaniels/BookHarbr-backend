@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken')
 const listsRouter = require('express').Router()
 const List = require('../models/list')
 const User = require('../models/user')
+const middleware = require('../utils/middleware')
 
 const getTokenFrom = request => {
   const authorization = request.get('authorization')
@@ -15,8 +16,14 @@ const getTokenFrom = request => {
   return null
 }
 
-listsRouter.get('/', async (request, response) => {
-  const lists = await List.find({})
+// listsRouter.get('/', async (request, response) => {
+//   const lists = await List.find({})
+//   response.status(201).json(lists)
+// })
+
+listsRouter.get('/', middleware.userExtractor, async (request, response) => {
+  const user = request.user
+  const lists = await List.find({ user: user.id })
   response.status(201).json(lists)
 })
 
