@@ -51,11 +51,15 @@ listsRouter.post('/', async (request, response, next) => {
 
   const user = await User.findById(decodedToken.id)
 
+  console.log('body', body)
+
   const list = new List({
     user: user.id,
     listName: body.listName,
-    bookKeys: body.bookKeys
+    books: body.books
   })
+
+  console.log('list', list)
 
   const savedList = await list.save()
   response.status(201).json(savedList)
@@ -66,9 +70,8 @@ listsRouter.put('/:id', (request, response, next) => {
   const body = request.body
 
   const list = {
-    user: body.userId,
     listName: body.listName,
-    bookKeys: body.bookKeys
+    books: body.books,
   }
 
   List.findByIdAndUpdate(request.params.id, list, { new: true })
