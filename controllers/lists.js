@@ -36,9 +36,18 @@ listsRouter.get('/:id', async (request, response, next) => {
   }
 })
 
-listsRouter.delete('/:id', async (request, response) => {
-  await List.findByIdAndDelete(request.params.id)
-  response.status(204).end()
+listsRouter.delete('/:id', middleware.userExtractor, async (request, response) => {
+  const user = request.user
+  const listToDelete = await List.findById(request.params.id)
+
+  if (!listToDelete) {
+    response.status(404).json({ error: 'invalid id' })
+  } else if (!(user.id === listToDelete.user.toJSON())) {
+    response.status(401).json({ error: 'invalid user' })
+  } else {
+    await List.findByIdAndDelete(request.params.id)
+    response.status(204).end()
+  }
 })
 
 listsRouter.post('/', async (request, response, next) => {
