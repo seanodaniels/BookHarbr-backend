@@ -34,11 +34,10 @@ app.use('/api/users', usersRouter)
 app.use('/api/books', booksRouter)
 app.use('/api/lists', listsRouter)
 
-// app.get('*', function (req, res) {
-//   // res.sendFile(path.join(__dirname, 'dist', 'index.html'))
-//   res.sendFile('dist/index.html')
-// })
-
+// Handles any requests that don't match the ones above
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname + '/dist/index.html'));
+})
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
