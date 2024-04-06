@@ -18,7 +18,3 @@ BookHarbr is a litle project I created to showcase the Javascript and React that
 - **Flexbox**
 
 The book search is powered by the OpenLibrary.org API. Information from that API is used to build the BookHarbr book lists which are stored at Mongo Atlas, which also houses user information.
-
-## University of Helsinki Credits
-
-An hourly breakdown of work can be found at [HOURS.md](HOURS.md)
